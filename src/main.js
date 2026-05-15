@@ -18,7 +18,6 @@ let currentQuery = '';
 let currentPage = 1;
 const PER_PAGE = 15;
 
-// ── Form submit ────────────────────────────
 formEl.addEventListener('submit', async event => {
   event.preventDefault();
 
@@ -74,6 +73,7 @@ formEl.addEventListener('submit', async event => {
 
 loadMoreBtn.addEventListener('click', async () => {
   currentPage += 1;
+  hideLoadMoreButton();
   showLoader();
 
   try {
@@ -82,12 +82,15 @@ loadMoreBtn.addEventListener('click', async () => {
     createGallery(data.hits);
 
     const cardEl = document.querySelector('.gallery-item');
-    const cardHeight = cardEl.getBoundingClientRect().height;
-    window.scrollBy({ top: cardHeight * 2, behavior: 'smooth' });
+    if (cardEl) {
+      const cardHeight = cardEl.getBoundingClientRect().height;
+      window.scrollBy({ top: cardHeight * 2, behavior: 'smooth' });
+    }
 
     const totalPages = Math.ceil(data.totalHits / PER_PAGE);
-    if (currentPage >= totalPages) {
-      hideLoadMoreButton();
+    if (currentPage < totalPages) {
+      showLoadMoreButton();
+    } else {
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
